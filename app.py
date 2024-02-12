@@ -69,7 +69,8 @@ def precipitation():
     
     last_date = dt.date(2017,8, 23)
     start_date =  last_date - dt.timedelta(days = 365)
-    last_year_data = session.query(measurement.date, measurement.prcp).filter(measurement.date >= start_date).all()
+    last_year_data = session.query(measurement.date, measurement.prcp)\
+                    .filter(measurement.date >= start_date).all()
 
 
 # Create a dictionary with date as the key and prcp as the value
@@ -113,8 +114,15 @@ def tobs():
     
     last_date = dt.date(2017,8, 23)
     first_date =  last_date - dt.timedelta(days = 365)
-    most_active_station = session.query(measurement.station).group_by(measurement.station).order_by(func.count().desc()).first()[0]
-    previous_year_obs = session.query(measurement.date, measurement.tobs).filter(measurement.station == most_active_station).filter(measurement.date >= first_date).all()
+    
+    most_active_station = session.query(measurement.station)\
+                        .group_by(measurement.station)\
+                        .order_by(func.count().desc()).first()[0]
+    
+    previous_year_obs = session.query(measurement.date, measurement.tobs)\
+                        .filter(measurement.station == most_active_station)\
+                        .filter(measurement.date >= first_date).all()
+    
     temperature_data = [{date: tobs} for date, tobs in previous_year_obs]
 
     # Close the session
@@ -138,19 +146,20 @@ def start_date(start_date):
 
     stats_start = session.query(func.min(measurement.tobs).label('min'),\
                                 func.avg(measurement.tobs).label('avg'),\
-                                func.max(measurement.tobs).label('max')).\
-    filter(measurement.date >= start_date).group_by(measurement.date).all()
+                                func.max(measurement.tobs).label('max'))\
+                                .filter(measurement.date >= start_date)\
+                                .group_by(measurement.date).all()
     
    
     start_dict = []
     
     for row in stats_start:
-        dictionary = {
+        stats = {
             'min': row.min,
             'avg': row.avg,
             'max': row.max
             }
-        start_dict.append(dictionary)
+        start_dict.append(stats)
     
 
     # Close the session
@@ -176,18 +185,19 @@ def start_end_date(start_date, end_date):
     
     stats_startend = session.query(func.min(measurement.tobs).label('min'),\
                                 func.avg(measurement.tobs).label('avg'),\
-                                func.max(measurement.tobs).label('max')).\
-    filter(measurement.date >= start_date).filter(measurement.date <= end_date).group_by(measurement.date).all()
+                                func.max(measurement.tobs).label('max'))\
+                                .filter(measurement.date >= start_date)\
+                                .filter(measurement.date <= end_date).group_by(measurement.date).all()
     
     startend_dict = []
     
     for row in stats_startend:
-        dictionary = {
+        stats = {
             'min': row.min,
             'avg': row.avg,
             'max': row.max
             }
-        startend_dict.append(dictionary)
+        startend_dict.append(stats)
     
     # Close the session
     session.close()
