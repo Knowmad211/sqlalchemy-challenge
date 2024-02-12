@@ -17,3 +17,4 @@ This task was very difficult for me and I used multiple resurces to complete the
 - GitHub repositories of other students
 - ChatGPT
 - Working with my classmates to troubleshoot my code
+- Tutoring sessions
